@@ -1,0 +1,14 @@
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\bin\Debug\net10.0\Movies.exe
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\bin\Debug\net10.0\Movies.deps.json
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\bin\Debug\net10.0\Movies.runtimeconfig.json
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\bin\Debug\net10.0\Movies.dll
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\bin\Debug\net10.0\Movies.pdb
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.AssemblyInfoInputs.cache
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.AssemblyInfo.cs
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.csproj.CoreCompileInputs.cache
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.dll
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\refint\Movies.dll
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.pdb
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.genruntimeconfig.cache
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\ref\Movies.dll
