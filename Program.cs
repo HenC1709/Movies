@@ -6,6 +6,7 @@ using Movies.UI;
 
 class Program
 {
+    /** Punto de entrada de la aplicación de consola. */
     static void Main()
     {
 
@@ -27,6 +28,7 @@ class Program
 
                 case"1":
             Usuario nuevo = auth.Registrar();
+            // La persistencia actual sigue usando JSON hasta preparar la migración a SQL.
             if (!UsuarioServicio.ExisteUsuario(usuarios, nuevo.Nombre))
                     {
                          usuarios.Add(nuevo); 

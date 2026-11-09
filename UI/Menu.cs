@@ -2,6 +2,7 @@ using System;
 
 namespace Movies.UI
 {
+    /** Muestra las opciones disponibles en la consola. */
     class Menu
 {
     public void Mostrar()
