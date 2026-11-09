@@ -23,5 +23,80 @@
     "Titulo": "Son como ninos 2",
     "Autor": "Adam Sandler",
     "fechaDeIngreso": "2026-05-01T20:33:26.4671975-04:00"
+  },
+  {
+    "Titulo": "El Padrino",
+    "Autor": "Francis Ford Coppola",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Pulp Fiction",
+    "Autor": "Quentin Tarantino",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Parásitos",
+    "Autor": "Bong Joon-ho",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Interestelar",
+    "Autor": "Christopher Nolan",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "El origen",
+    "Autor": "Christopher Nolan",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "El viaje de Chihiro",
+    "Autor": "Hayao Miyazaki",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Sueños de libertad",
+    "Autor": "Frank Darabont",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Matrix",
+    "Autor": "Lana y Lilly Wachowski",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Forrest Gump",
+    "Autor": "Robert Zemeckis",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Coco",
+    "Autor": "Lee Unkrich",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Parque Jurásico",
+    "Autor": "Steven Spielberg",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Amélie",
+    "Autor": "Jean-Pierre Jeunet",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Roma",
+    "Autor": "Alfonso Cuarón",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "La La Land",
+    "Autor": "Damien Chazelle",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
+  },
+  {
+    "Titulo": "Whiplash",
+    "Autor": "Damien Chazelle",
+    "fechaDeIngreso": "2026-11-08T00:00:00-04:00"
   }
 ]
