@@ -27,6 +27,7 @@ internal sealed class SesionViewModel : INotifyPropertyChanged
     public bool PuedeInteractuar => !ocupado;
     public bool EsInvitado => usuario is null;
     public bool TieneSesion => usuario is not null;
+    internal Usuario? UsuarioActual => usuario;
     public bool EsAdministrador => usuario?.Rol == Rol.Admin;
     public string NombreSesion => usuario?.Nombre ?? "";
     public string RolSesion => EsAdministrador ? "Administrador" : "Usuario";

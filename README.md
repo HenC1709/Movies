@@ -20,6 +20,8 @@ Registra la primera cuenta en una instalación local de confianza. Esa cuenta se
 
 Como invitado puedes buscar y listar películas. Con una sesión abierta, consulta el ID de una película en el catálogo o en los resultados, elige **Marcar película** y selecciona **Pendiente** o **Vista**. Para cambiar el estado repite la operación con el mismo ID. **Mi lista** muestra las selecciones de la cuenta activa.
 
+En WPF, selecciona una película y pulsa **Ver ficha**, Enter o haz doble clic. Con una sesión abierta, marca la película como **Pendiente** o **Vista** desde su ficha. **Mi lista** muestra los estados de la cuenta activa. Las cuentas administradoras pueden usar **Agregar película** junto a la sesión o **Editar** desde la ficha.
+
 ## Datos locales
 
 SQLite conserva el catálogo, las cuentas y las listas entre sesiones. Para respaldar todos los datos, cierra las instancias de Movies y copia la carpeta de datos. El JSON de importación solo contiene el catálogo original.

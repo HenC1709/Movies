@@ -48,9 +48,17 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="BotonConSeleccion" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Style.Triggers>
+                <Trigger Property="Tag" Value="{x:Null}">
+                    <Setter Property="IsEnabled" Value="False" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     <Grid Margin="24">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -62,9 +70,18 @@
         <TextBlock Text="Movies" FontSize="36" FontWeight="Bold" Margin="0,0,0,16"
                    Grid.ColumnSpan="3" />
 
-        <Border x:Name="PanelCatalogo" Grid.Row="1" Padding="20" Background="White"
+        <DockPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,12" LastChildFill="True">
+            <Button DockPanel.Dock="Left" Content="_Catálogo" Click="MostrarCatalogo" />
+            <Button DockPanel.Dock="Left" Content="_Mi lista" Click="MostrarMiLista" Margin="8,0,0,0"
+                    Visibility="{Binding TieneSesion, Converter={StaticResource Visibilidad}}" />
+            <TextBlock x:Name="Aviso" Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"
+                       Foreground="#1C5045" AutomationProperties.LiveSetting="Polite" />
+        </DockPanel>
+
+        <Border x:Name="PanelCatalogo" Grid.Row="2" Padding="20" Background="White"
                 CornerRadius="12" BorderBrush="#DBE2DB" BorderThickness="1">
-            <Grid>
+          <Grid>
+            <Grid Visibility="{Binding ViendoCatalogo, Converter={StaticResource Visibilidad}}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
@@ -91,16 +108,22 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <TextBlock Text="{Binding Resumen}" Foreground="#485C55" Margin="0,0,0,6" />
-                    <DataGrid Grid.Row="1" ItemsSource="{Binding Peliculas}" AutoGenerateColumns="False"
+                    <DockPanel Margin="0,0,0,6">
+                        <Button DockPanel.Dock="Right" Content="Ver _ficha" Click="AbrirFicha"
+                                Style="{StaticResource BotonConSeleccion}"
+                                Tag="{Binding ElementName=TablaCatalogo, Path=SelectedItem}" />
+                        <TextBlock Text="{Binding Resumen}" Foreground="#485C55" VerticalAlignment="Center" />
+                    </DockPanel>
+                    <DataGrid x:Name="TablaCatalogo" Grid.Row="1" ItemsSource="{Binding Peliculas}" AutoGenerateColumns="False"
                               IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                               HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
                               BorderBrush="#DBE2DB" Background="White"
-                              RowHeight="34" SelectionMode="Single"
+                              RowHeight="34" SelectionMode="Single" SelectionUnit="FullRow"
+                              PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
                               AutomationProperties.Name="Películas del catálogo">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Titulo}" Width="3*" />
-                            <DataGridTextColumn Header="Autor" Binding="{Binding Autor}" Width="2*" />
+                            <DataGridTextColumn Header="Título" Binding="{Binding Titulo}" Width="3*" MinWidth="145" />
+                            <DataGridTextColumn Header="Autor" Binding="{Binding Autor}" Width="2*" MinWidth="105" />
                             <DataGridTextColumn Header="Ingreso" Binding="{Binding FechaDeIngreso, StringFormat=d}"
                                                 Width="Auto" MinWidth="86" />
                         </DataGrid.Columns>
@@ -118,14 +141,51 @@
                                TextWrapping="Wrap" Foreground="#485C55" VerticalAlignment="Top" />
                 </Grid>
             </Grid>
+            <Grid Visibility="{Binding ViendoLista, Converter={StaticResource Visibilidad}}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <DockPanel Margin="0,0,0,16">
+                    <Button DockPanel.Dock="Right" Content="Ver _ficha" Click="AbrirFicha"
+                            Style="{StaticResource BotonConSeleccion}"
+                            Tag="{Binding ElementName=TablaLista, Path=SelectedItem}" />
+                    <TextBlock Text="Mi lista" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" />
+                </DockPanel>
+                <DataGrid x:Name="TablaLista" Grid.Row="1" ItemsSource="{Binding MiLista}" AutoGenerateColumns="False"
+                          IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                          HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
+                          BorderBrush="#DBE2DB" Background="White"
+                          RowHeight="34" SelectionMode="Single" SelectionUnit="FullRow"
+                          PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
+                          AutomationProperties.Name="Mi lista de películas">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Título" Binding="{Binding Pelicula.Titulo}" Width="3*" MinWidth="145" />
+                        <DataGridTextColumn Header="Autor" Binding="{Binding Pelicula.Autor}" Width="2*" MinWidth="105" />
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="Auto" MinWidth="86" />
+                    </DataGrid.Columns>
+                    <DataGrid.Style>
+                        <Style TargetType="DataGrid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding MiLista.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.Style>
+                </DataGrid>
+                <TextBlock Grid.Row="1" Text="{Binding EstadoLista}" AutomationProperties.LiveSetting="Polite"
+                           Foreground="#485C55" TextWrapping="Wrap" VerticalAlignment="Top" />
+            </Grid>
+          </Grid>
         </Border>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="2" Grid.Column="2" VerticalScrollBarVisibility="Auto">
             <Border Padding="20" Background="White" CornerRadius="12" VerticalAlignment="Top"
                     BorderBrush="#DBE2DB" BorderThickness="1">
                 <Grid>
                     <StackPanel Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}"
-                                IsEnabled="{Binding PuedeInteractuar}">
+                                IsEnabled="{Binding PuedeInteractuar}" KeyDown="AccederConEnter">
                         <TextBlock Text="{Binding TituloFormulario}" FontSize="24" FontWeight="SemiBold" />
                         <TextBlock Text="{Binding Ayuda}" TextWrapping="Wrap" Foreground="#485C55"
                                    Margin="0,6,0,14" />
@@ -136,7 +196,7 @@
                         <PasswordBox x:Name="Clave" />
                         <TextBlock Text="{Binding Mensaje}" AutomationProperties.LiveSetting="Polite"
                                    Foreground="#8C3D26" TextWrapping="Wrap" Margin="0,8,0,12" />
-                        <Button Content="{Binding TituloFormulario}" Click="Acceder" IsDefault="True" />
+                        <Button Content="{Binding TituloFormulario}" Click="Acceder" />
                         <Button Content="{Binding AccionAlternativa}" Click="CambiarFormulario"
                                 Background="#345C54" Margin="0,8,0,0" />
                     </StackPanel>
@@ -145,14 +205,9 @@
                         <TextBlock Text="{Binding NombreSesion}" FontSize="18" TextWrapping="Wrap"
                                    Margin="0,10,0,2" />
                         <TextBlock Text="{Binding RolSesion}" Foreground="#485C55" />
-                        <Border Background="#EEF5EF" CornerRadius="6" Padding="12" Margin="0,16,0,0"
-                                Visibility="{Binding EsAdministrador, Converter={StaticResource Visibilidad}}">
-                            <StackPanel>
-                                <TextBlock Text="Permisos de catálogo" FontWeight="SemiBold" />
-                                <TextBlock Text="Agregar y editar películas" Margin="0,4,0,0" TextWrapping="Wrap" />
-                            </StackPanel>
-                        </Border>
-                        <Button x:Name="Salir" Content="Cerrar sesión" Click="CerrarSesion" Margin="0,20,0,0" />
+                        <Button Content="_Agregar película" Click="AgregarPelicula" Margin="0,16,0,0"
+                                Visibility="{Binding EsAdministrador, Converter={StaticResource Visibilidad}}" />
+                        <Button Content="Cerrar sesión" Click="CerrarSesion" Margin="0,8,0,0" />
                     </StackPanel>
                 </Grid>
             </Border>
