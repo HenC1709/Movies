@@ -1,66 +1,30 @@
-﻿using System;
-using Movies.Logic;
-using Movies.Models;
-using Movies.Services;
+using System.Text.Json;
+using Microsoft.Data.Sqlite;
+using Movies.Services.Sql;
 using Movies.UI;
 
-class Program
+string carpeta = Environment.GetEnvironmentVariable("MOVIES_DATA_DIR") ??
+    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Movies");
+
+try
 {
-    /** Punto de entrada de la aplicación de consola. */
-    static void Main()
-    {
+    using var conexion = BaseDatos.Abrir(Path.GetFullPath(carpeta));
+    string origen = Path.Combine(AppContext.BaseDirectory, "Data", "PeliculasGuardadas.json");
+    int? importadas = BaseDatos.Inicializar(conexion, origen);
+    if (importadas.HasValue)
+        Console.WriteLine($"Importación completada: {importadas} películas. Copia del JSON en {carpeta}.");
 
-        Auth auth = new Auth();
-        List<Usuario> usuarios = UsuarioServicio.Cargar();
-
-        Pelicula.CargarDatos();
-        Menu miMenu = new Menu();
-        Boveda miDepo = new Boveda();
-        Busqueda buscador = new Busqueda();
-
-        bool ejecutando = true;
-        while (ejecutando)
-        {
-            miMenu.Mostrar();
-            string opc = Console.ReadLine()!;
-            switch (opc)
-            {
-
-                case "1":
-                    Usuario nuevo = auth.Registrar();
-                    // La persistencia actual sigue usando JSON hasta preparar la migración a SQL.
-                    if (!UsuarioServicio.ExisteUsuario(usuarios, nuevo.Nombre))
-                    {
-                        usuarios.Add(nuevo);
-                        UsuarioServicio.Guardar(usuarios);
-                        Console.WriteLine("Usuario registrado con éxito!");
-                    }
-                    else
-                    {
-                        Console.WriteLine("ese usuario ya existe");
-                    }
-                    break;
-
-                case "2":
-                    buscador.Buscar(miDepo);
-                    break;
-
-                case "3":
-                    Console.Write("Titulo: "); string t = Console.ReadLine()!;
-                    Console.Write("Autor: "); string a = Console.ReadLine()!;
-                    miDepo.Agregar(new Pelicula(t, a));
-                    break;
-
-                case "4":
-                    Lista.MostrarLista();
-                    break;
-
-                case "0":
-                    ejecutando = false;
-                    break;
-            }
-            Console.WriteLine("\npresione cualaquier tecla para continuar...");
-            Console.ReadKey();
-        }
-    }
+    var menu = new Menu(new UsuarioSqlServicio(conexion), new PeliculaSqlServicio(conexion));
+    menu.Ejecutar();
+}
+catch (EndOfStreamException)
+{
+    // La entrada se cerró durante una pregunta. No se envía la operación pendiente.
+}
+catch (Exception error) when (error is SqliteException or IOException or UnauthorizedAccessException
+    or JsonException or InvalidDataException)
+{
+    Console.Error.WriteLine($"No se pudo abrir o preparar el catálogo: {error.Message}");
+    Console.Error.WriteLine("Si falló la importación, revisa Data/PeliculasGuardadas.json y vuelve a iniciar Movies.");
+    Environment.ExitCode = 1;
 }
