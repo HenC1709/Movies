@@ -6,6 +6,13 @@ namespace Movies.Services.Sql;
 
 internal static class BaseDatos
 {
+    public static string CarpetaLocal() =>
+        Path.GetFullPath(Environment.GetEnvironmentVariable("MOVIES_DATA_DIR") ??
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Movies"));
+
+    public static string RutaCatalogo() =>
+        Path.Combine(AppContext.BaseDirectory, "Data", "PeliculasGuardadas.json");
+
     public static SqliteConnection Abrir(string carpeta)
     {
         Directory.CreateDirectory(carpeta);

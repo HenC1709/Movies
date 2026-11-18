@@ -3,14 +3,11 @@ using Microsoft.Data.Sqlite;
 using Movies.Services.Sql;
 using Movies.UI;
 
-string carpeta = Environment.GetEnvironmentVariable("MOVIES_DATA_DIR") ??
-    Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Movies");
-
 try
 {
-    using var conexion = BaseDatos.Abrir(Path.GetFullPath(carpeta));
-    string origen = Path.Combine(AppContext.BaseDirectory, "Data", "PeliculasGuardadas.json");
-    int? importadas = BaseDatos.Inicializar(conexion, origen);
+    string carpeta = BaseDatos.CarpetaLocal();
+    using var conexion = BaseDatos.Abrir(carpeta);
+    int? importadas = BaseDatos.Inicializar(conexion, BaseDatos.RutaCatalogo());
     if (importadas.HasValue)
         Console.WriteLine($"Importación completada: {importadas} películas. Copia del JSON en {carpeta}.");
 

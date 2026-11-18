@@ -27,8 +27,7 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
         {
             string titulo = filas.GetString(1);
             if (busqueda == null || titulo.Contains(busqueda, StringComparison.OrdinalIgnoreCase))
-                peliculas.Add(new(filas.GetInt64(0), titulo, filas.GetString(2),
-                    DateTimeOffset.Parse(filas.GetString(3), CultureInfo.InvariantCulture)));
+                peliculas.Add(LeerPelicula(filas));
         }
         return peliculas;
     }
@@ -36,12 +35,14 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
     public void Agregar(Usuario usuario, string titulo, string autor)
     {
         ExigirAdministrador(usuario);
+        ValidarCampos(titulo, autor);
         Insertar(conexion, null, titulo.Trim(), autor.Trim(), DateTimeOffset.Now.ToString("O"));
     }
 
     public bool Editar(Usuario usuario, long id, string titulo, string autor)
     {
         ExigirAdministrador(usuario);
+        ValidarCampos(titulo, autor);
         using var cmd = conexion.CreateCommand();
         cmd.CommandText = "UPDATE Peliculas SET Titulo=$titulo, Autor=$autor WHERE PeliculaId=$id";
         cmd.Parameters.AddWithValue("$titulo", titulo.Trim());
@@ -53,6 +54,12 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
     private static void ExigirAdministrador(Usuario usuario)
     {
         if (usuario.Rol != Rol.Admin) throw new UnauthorizedAccessException("Se requiere un administrador.");
+    }
+
+    private static void ValidarCampos(string titulo, string autor)
+    {
+        if (string.IsNullOrWhiteSpace(titulo) || string.IsNullOrWhiteSpace(autor))
+            throw new ArgumentException("El título y el autor son obligatorios.");
     }
 
     public bool Marcar(Usuario usuario, long peliculaId, string estado)
@@ -71,18 +78,34 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
         return cmd.ExecuteNonQuery() == 1;
     }
 
-    public List<string> MiLista(Usuario usuario)
+    public string? EstadoEnLista(Usuario usuario, long peliculaId)
     {
         using var cmd = conexion.CreateCommand();
         cmd.CommandText = """
-            SELECT p.PeliculaId, p.Titulo, up.Estado FROM UsuarioPelicula up
+            SELECT Estado FROM UsuarioPelicula
+            WHERE UsuarioId=$usuario AND PeliculaId=$pelicula
+            """;
+        cmd.Parameters.AddWithValue("$usuario", usuario.Id);
+        cmd.Parameters.AddWithValue("$pelicula", peliculaId);
+        return cmd.ExecuteScalar() as string;
+    }
+
+    public List<EntradaLista> MiLista(Usuario usuario)
+    {
+        using var cmd = conexion.CreateCommand();
+        cmd.CommandText = """
+            SELECT p.PeliculaId, p.Titulo, p.Autor, p.FechaDeIngreso, up.Estado FROM UsuarioPelicula up
             JOIN Peliculas p ON p.PeliculaId=up.PeliculaId
             WHERE up.UsuarioId=$usuario ORDER BY p.Titulo, p.PeliculaId
             """;
         cmd.Parameters.AddWithValue("$usuario", usuario.Id);
         using var filas = cmd.ExecuteReader();
-        var lista = new List<string>();
-        while (filas.Read()) lista.Add($"[{filas.GetInt64(0)}] {filas.GetString(1)} — {filas.GetString(2)}");
+        var lista = new List<EntradaLista>();
+        while (filas.Read()) lista.Add(new(LeerPelicula(filas), filas.GetString(4)));
         return lista;
     }
+
+    private static Pelicula LeerPelicula(SqliteDataReader fila) =>
+        new(fila.GetInt64(0), fila.GetString(1), fila.GetString(2),
+            DateTimeOffset.Parse(fila.GetString(3), CultureInfo.InvariantCulture));
 }

@@ -6,6 +6,8 @@ Videoteca de consola en C# y .NET 10. El catálogo es compartido y cada cuenta t
 
 Desde la carpeta del proyecto, ejecuta `dotnet run --project Movies.csproj`. La primera compilación descarga de NuGet el proveedor de SQLite.
 
+Para abrir Movies en WPF desde Windows, ejecuta `dotnet run --project Desktop/Movies.Desktop.csproj`. El catálogo y la búsqueda por título están disponibles desde que abres la ventana. Usa **Ver todo** para limpiar el filtro y recargar el catálogo. Puedes iniciar sesión con las cuentas de consola o registrar una nueva. Ambas aplicaciones usan la misma biblioteca y la misma base local, y respetan `MOVIES_DATA_DIR`.
+
 ## Primer inicio
 
 Movies crea `Movies.db` en la carpeta local de datos de la aplicación (en Windows, `%LOCALAPPDATA%\Movies`). Puedes configurar otra carpeta mediante `MOVIES_DATA_DIR`, por ejemplo para usar una base de práctica independiente.
@@ -17,6 +19,8 @@ El primer inicio importa el archivo `Data/PeliculasGuardadas.json` distribuido c
 Registra la primera cuenta en una instalación local de confianza. Esa cuenta será administradora y podrá agregar y editar películas. Las cuentas posteriores tendrán el rol Usuario. Usa una contraseña nueva de al menos ocho caracteres. Los usuarios del antiguo JSON eran datos de práctica y deberán registrarse de nuevo. SQLite guarda el hash PBKDF2 y la sal individual de cada contraseña.
 
 Como invitado puedes buscar y listar películas. Con una sesión abierta, consulta el ID de una película en el catálogo o en los resultados, elige **Marcar película** y selecciona **Pendiente** o **Vista**. Para cambiar el estado repite la operación con el mismo ID. **Mi lista** muestra las selecciones de la cuenta activa.
+
+En WPF, selecciona una película y pulsa **Ver ficha**, Enter o haz doble clic. Con una sesión abierta, marca la película como **Pendiente** o **Vista** desde su ficha. **Mi lista** muestra los estados de la cuenta activa. Las cuentas administradoras pueden usar **Agregar película** junto a la sesión o **Editar** desde la ficha.
 
 ## Datos locales
 

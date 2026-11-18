@@ -68,7 +68,8 @@ internal sealed class Menu(UsuarioSqlServicio usuarios, PeliculaSqlServicio peli
                     case "6" when sesion != null:
                         var lista = peliculas.MiLista(sesion);
                         if (lista.Count == 0) Console.WriteLine("Tu lista está vacía.");
-                        foreach (string fila in lista) Console.WriteLine(fila);
+                        foreach (var fila in lista)
+                            Console.WriteLine($"[{fila.Pelicula.Id}] {fila.Pelicula.Titulo} — {fila.Estado}");
                         break;
                     case "7" when sesion != null:
                         Marcar(sesion);
