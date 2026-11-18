@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="Data/PeliculasGuardadas.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.0" />
+    <Compile Remove="Core/**;Desktop/**;Models/**;Services/Sql/**" />
+    <ProjectReference Include="Core/Movies.Core.csproj" />
   </ItemGroup>
 
 </Project>

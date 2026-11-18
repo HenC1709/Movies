@@ -6,6 +6,8 @@ Videoteca de consola en C# y .NET 10. El catálogo es compartido y cada cuenta t
 
 Desde la carpeta del proyecto, ejecuta `dotnet run --project Movies.csproj`. La primera compilación descarga de NuGet el proveedor de SQLite.
 
+Para abrir Movies en WPF desde Windows, ejecuta `dotnet run --project Desktop/Movies.Desktop.csproj`. El catálogo y la búsqueda por título están disponibles desde que abres la ventana. Usa **Ver todo** para limpiar el filtro y recargar el catálogo. Puedes iniciar sesión con las cuentas de consola o registrar una nueva. Ambas aplicaciones usan la misma biblioteca y la misma base local, y respetan `MOVIES_DATA_DIR`.
+
 ## Primer inicio
 
 Movies crea `Movies.db` en la carpeta local de datos de la aplicación (en Windows, `%LOCALAPPDATA%\Movies`). Puedes configurar otra carpeta mediante `MOVIES_DATA_DIR`, por ejemplo para usar una base de práctica independiente.
