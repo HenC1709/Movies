@@ -12,3 +12,4 @@ C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\refint\Movi
 C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.pdb
 C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.genruntimeconfig.cache
 C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\ref\Movies.dll
+C:\Users\HP VICTUS\Desktop\proyectos_dotNet\Movies\obj\Debug\net10.0\Movies.sourcelink.json

@@ -12,6 +12,9 @@ namespace Movies.Models
     /** Representa una película y conserva temporalmente su persistencia JSON. */
     public class Pelicula
     {
+        internal static readonly string RutaCatalogo = Path.Combine("Data", "PeliculasGuardadas.json");
+        internal static readonly string RutaRespaldo = RutaCatalogo + ".bak";
+
         public string Titulo { get; set; } = "";
 
         public string Autor { get; set; } = "";
@@ -22,40 +25,78 @@ namespace Movies.Models
 
 
         /** Guarda la película agregada en el archivo JSON actual. */
-        public static void GuardarPelicula(Pelicula NuevaPeli)
+        public static void GuardarPelicula(Pelicula nuevaPelicula)
         {
-            string ruta = Path.Combine("Data", "PeliculasGuardadas.json");
-            List<Pelicula> lista = new List<Pelicula>();
-            if (File.Exists(ruta))
+            List<Pelicula> lista = LeerCatalogo();
+            lista.Add(nuevaPelicula);
+
+            Directory.CreateDirectory(Path.GetDirectoryName(RutaCatalogo)!);
+            string rutaTemporal = $"{RutaCatalogo}.{Guid.NewGuid():N}.tmp";
+            try
             {
-                string contenido = File.ReadAllText(ruta);
-                if (!string.IsNullOrWhiteSpace(contenido))
+                using (var archivo = new FileStream(rutaTemporal, FileMode.CreateNew, FileAccess.Write))
                 {
-                    lista = JsonSerializer.Deserialize<List<Pelicula>>(contenido) ?? new List<Pelicula>();
+                    JsonSerializer.Serialize(archivo, lista, new JsonSerializerOptions { WriteIndented = true });
+                    archivo.Flush(flushToDisk: true);
+                }
+
+                // El temporal se escribe en la misma carpeta antes de reemplazar el original.
+                if (File.Exists(RutaCatalogo))
+                {
+                    File.Replace(rutaTemporal, RutaCatalogo, RutaRespaldo);
+                }
+                else
+                {
+                    File.Move(rutaTemporal, RutaCatalogo);
                 }
             }
-            lista.Add(NuevaPeli);
-            var opciones = new JsonSerializerOptions { WriteIndented = true };
-            string jsonfinal = JsonSerializer.Serialize(lista, opciones);
-            File.WriteAllText(ruta, jsonfinal);
-            Console.ForegroundColor = ConsoleColor.DarkMagenta;
-            Console.WriteLine("Pelicula guardada con exito. ");
+            finally
+            {
+                try
+                {
+                    if (File.Exists(rutaTemporal))
+                    {
+                        File.Delete(rutaTemporal);
+                    }
+                }
+                catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+                {
+                    // Un error de limpieza no debe ocultar el fallo del guardado.
+                }
+            }
         }
 
         /** Carga en memoria las películas guardadas en JSON. */
         public static void CargarDatos()
         {
-            string ruta = Path.Combine("Data", "PeliculasGuardadas.json");
-            if (!File.Exists(ruta))
+            Lista.ListaPeliculas = LeerCatalogo();
+        }
+
+        private static List<Pelicula> LeerCatalogo()
+        {
+            string contenido;
+            try
             {
-                Lista.ListaPeliculas = new List<Pelicula>();
-                return;
+                contenido = File.ReadAllText(RutaCatalogo);
+            }
+            catch (FileNotFoundException) when (!File.Exists(RutaRespaldo))
+            {
+                return new List<Pelicula>();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                return new List<Pelicula>();
             }
 
-            string contenido = File.ReadAllText(ruta);
-            Lista.ListaPeliculas = string.IsNullOrWhiteSpace(contenido)
-                ? new List<Pelicula>()
-                : JsonSerializer.Deserialize<List<Pelicula>>(contenido) ?? new List<Pelicula>();
+            var lista = JsonSerializer.Deserialize<List<Pelicula>>(contenido);
+            if (lista is null || lista.Any(pelicula =>
+                pelicula is null || string.IsNullOrWhiteSpace(pelicula.Titulo) ||
+                string.IsNullOrWhiteSpace(pelicula.Autor)))
+            {
+                throw new JsonException("Se esperaba una lista de películas con título y autor.");
+            }
+
+            return lista;
         }
 
 

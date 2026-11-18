@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Movies.Logic;
 using Movies.Models;
 using Movies.Services;
@@ -10,10 +11,27 @@ class Program
     static void Main()
     {
 
+        try
+        {
+            Pelicula.CargarDatos();
+        }
+        catch (JsonException)
+        {
+            Console.Error.WriteLine($"El catálogo «{Pelicula.RutaCatalogo}» está dañado y se ha conservado.");
+            MostrarInstruccionesDeRecuperacion();
+            Environment.ExitCode = 1;
+            return;
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException)
+        {
+            Console.Error.WriteLine($"No se pudo leer el catálogo «{Pelicula.RutaCatalogo}»: {error.Message}");
+            MostrarInstruccionesDeRecuperacion();
+            Environment.ExitCode = 1;
+            return;
+        }
+
         Auth auth = new Auth();
         List<Usuario> usuarios = UsuarioServicio.Cargar();
-
-        Pelicula.CargarDatos();
         Menu miMenu = new Menu();
         Boveda miDepo = new Boveda();
         Busqueda buscador = new Busqueda();
@@ -42,13 +60,23 @@ class Program
                     break;
 
                 case "2":
-                    buscador.Buscar(miDepo);
+                    buscador.Buscar();
                     break;
 
                 case "3":
-                    Console.Write("Titulo: "); string t = Console.ReadLine()!;
-                    Console.Write("Autor: "); string a = Console.ReadLine()!;
-                    miDepo.Agregar(new Pelicula(t, a));
+                    string? titulo = LeerCampoObligatorio("Título");
+                    if (titulo is null)
+                    {
+                        return;
+                    }
+
+                    string? autor = LeerCampoObligatorio("Autor");
+                    if (autor is null)
+                    {
+                        return;
+                    }
+
+                    miDepo.Agregar(new Pelicula(titulo, autor));
                     break;
 
                 case "4":
@@ -62,5 +90,33 @@ class Program
             Console.WriteLine("\npresione cualaquier tecla para continuar...");
             Console.ReadKey();
         }
+    }
+
+    private static void MostrarInstruccionesDeRecuperacion()
+    {
+        if (File.Exists(Pelicula.RutaRespaldo))
+        {
+            Console.Error.WriteLine(
+                $"Guarda aparte el catálogo actual si existe. Copia «{Pelicula.RutaRespaldo}» a «{Pelicula.RutaCatalogo}» y vuelve a iniciar la aplicación.");
+        }
+        else
+        {
+            Console.Error.WriteLine("No hay un respaldo local. Revisa el archivo o restáuralo desde una copia válida y vuelve a iniciar la aplicación.");
+        }
+    }
+
+    private static string? LeerCampoObligatorio(string campo)
+    {
+        Console.Write($"{campo}: ");
+        string? valor = Console.ReadLine()?.Trim();
+
+        while (valor == string.Empty)
+        {
+            Console.WriteLine($"El campo «{campo}» es obligatorio.");
+            Console.Write($"{campo}: ");
+            valor = Console.ReadLine()?.Trim();
+        }
+
+        return valor;
     }
 }
