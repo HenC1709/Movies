@@ -5,3 +5,14 @@
 /Core/obj/
 /Desktop/bin/
 /Desktop/obj/
+.bin/
+.obj/
+
+# Credenciales y configuración local de TMDB
+.env
+.env.*
+!.env.example
+.tmdb-token
+tmdb.local.json
+appsettings.Local.json
+secrets.json

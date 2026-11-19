@@ -22,6 +22,21 @@ Como invitado puedes buscar y listar películas. Con una sesión abierta, consul
 
 En WPF, selecciona una película y pulsa **Ver ficha**, Enter o haz doble clic. Con una sesión abierta, marca la película como **Pendiente** o **Vista** desde su ficha. **Mi lista** muestra los estados de la cuenta activa. Las cuentas administradoras pueden usar **Agregar película** junto a la sesión o **Editar** desde la ficha.
 
+En el formulario de administración, **Elegir imagen** permite adjuntar un JPEG o PNG de hasta 8 MiB y 4096 píxeles por lado. **Quitar carátula** borra la imagen cuando guardas. Movies conserva su propia copia dentro de SQLite, junto con el resto de los datos.
+
+El catálogo, **Mi lista** y la ficha muestran la imagen guardada. Si la película no tiene imagen o Movies no puede leerla, aparece una carátula genérica.
+
+### Buscar carátulas en TMDB
+
+Configura `TMDB_READ_ACCESS_TOKEN` con tu **API Read Access Token** de [los ajustes de TMDB](https://www.themoviedb.org/settings/api). En PowerShell puedes cargarlo en la sesión actual antes de abrir Movies:
+
+```powershell
+$env:TMDB_READ_ACCESS_TOKEN = Read-Host 'API Read Access Token de TMDB' -MaskInput
+dotnet run --project Desktop/Movies.Desktop.csproj
+```
+
+En el formulario de una película, escribe el título, pulsa **Buscar en TMDB** y elige un resultado por título y año. **Usar carátula** descarga la imagen y permite revisarla antes de pulsar **Guardar**. Después de guardar, la carátula se puede ver sin conexión.
+
 ## Datos locales
 
 SQLite conserva el catálogo, las cuentas y las listas entre sesiones. Para respaldar todos los datos, cierra las instancias de Movies y copia la carpeta de datos. El JSON de importación solo contiene el catálogo original.

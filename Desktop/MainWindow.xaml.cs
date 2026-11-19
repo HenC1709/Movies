@@ -80,9 +80,8 @@ public partial class MainWindow : Window
 
     private async Task AbrirSeleccionAsync()
     {
-        Pelicula? pelicula = catalogo.ViendoLista
-            ? (TablaLista.SelectedItem as EntradaLista)?.Pelicula
-            : TablaCatalogo.SelectedItem as Pelicula;
+        var fila = (catalogo.ViendoLista ? TablaLista.SelectedItem : TablaCatalogo.SelectedItem) as FilaPelicula;
+        Pelicula? pelicula = fila?.Pelicula;
         if (pelicula is null) return;
 
         var usuario = sesion.UsuarioActual;

@@ -1,4 +1,5 @@
 using System.Windows;
+using Microsoft.Win32;
 
 namespace Movies.Desktop;
 
@@ -14,8 +15,8 @@ public partial class FichaWindow : Window
         DataContext = ficha;
         Loaded += async (_, _) =>
         {
+            await ficha.CargarFichaAsync();
             if (ficha.EsFormulario) CampoTitulo.Focus();
-            await ficha.CargarEstadoAsync();
             if (ficha.EsFicha)
             {
                 if (ficha.PuedeMarcar) Pendiente.Focus();
@@ -37,6 +38,43 @@ public partial class FichaWindow : Window
         if (await ficha.GuardarAsync()) DialogResult = true;
         else if (string.IsNullOrWhiteSpace(ficha.Titulo)) CampoTitulo.Focus();
         else if (string.IsNullOrWhiteSpace(ficha.Autor)) CampoAutor.Focus();
+        else GuardarPelicula.Focus();
+    }
+
+    private async void ElegirCaratula(object sender, RoutedEventArgs e)
+    {
+        var selector = new OpenFileDialog
+        {
+            Title = "Elegir carátula",
+            Filter = "Imágenes JPEG y PNG|*.jpg;*.jpeg;*.png",
+            CheckFileExists = true
+        };
+        if (selector.ShowDialog(this) == true) await ficha.ElegirCaratulaAsync(selector.FileName);
+        BotonElegirCaratula.Focus();
+    }
+
+    private void QuitarCaratula(object sender, RoutedEventArgs e)
+    {
+        ficha.QuitarCaratula();
+        BotonElegirCaratula.Focus();
+    }
+
+    private async void BuscarEnTmdb(object sender, RoutedEventArgs e)
+    {
+        await ficha.BuscarEnTmdbAsync();
+        if (ficha.HayResultadosTmdb)
+        {
+            CoincidenciasTmdb.SelectedIndex = 0;
+            CoincidenciasTmdb.Focus();
+        }
+        else BotonBuscarTmdb.Focus();
+    }
+
+    private async void UsarResultadoTmdb(object sender, RoutedEventArgs e)
+    {
+        if (CoincidenciasTmdb.SelectedItem is ResultadoTmdb resultado)
+            await ficha.ElegirResultadoTmdbAsync(resultado);
+        if (ficha.HayResultadosTmdb) CoincidenciasTmdb.Focus();
         else GuardarPelicula.Focus();
     }
 

@@ -15,11 +15,11 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public string Consulta { get; set; } = "";
-    public IReadOnlyList<Pelicula> Peliculas { get; private set; } = [];
+    public IReadOnlyList<FilaPelicula> Peliculas { get; private set; } = [];
     public string Resumen { get; private set; } = "";
     public string Estado { get; private set; } = "";
     public bool PuedeBuscar => !cargando;
-    public IReadOnlyList<EntradaLista> MiLista { get; private set; } = [];
+    public IReadOnlyList<FilaPelicula> MiLista { get; private set; } = [];
     public string EstadoLista { get; private set; } = "";
     public bool ViendoLista { get; private set; }
     public bool ViendoCatalogo => !ViendoLista;
@@ -39,7 +39,8 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
 
         try
         {
-            var resultados = await ConsultarAsync(servicio => servicio.Catalogo(titulo.Length == 0 ? null : titulo));
+            var resultados = await ConsultarAsync(servicio => servicio.Catalogo(titulo.Length == 0 ? null : titulo)
+                .Select(pelicula => FilaPelicula.Crear(servicio, pelicula)).ToList());
             if (revision != revisionCatalogo) return;
             Peliculas = resultados;
 
@@ -87,7 +88,8 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
 
         try
         {
-            var entradas = await ConsultarAsync(servicio => servicio.MiLista(usuario));
+            var entradas = await ConsultarAsync(servicio => servicio.MiLista(usuario)
+                .Select(entrada => FilaPelicula.Crear(servicio, entrada.Pelicula, entrada.Estado)).ToList());
             if (revision != revisionLista) return;
             MiLista = entradas;
             EstadoLista = entradas.Count == 0
