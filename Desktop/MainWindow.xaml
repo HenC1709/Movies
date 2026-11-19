@@ -55,6 +55,10 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <DataTemplate x:Key="MiniaturaCaratula">
+            <Image Source="{Binding Caratula, TargetNullValue={StaticResource CaratulaGenerica}}"
+                   Width="36" Height="54" Stretch="Uniform" Margin="4,3" />
+        </DataTemplate>
     </Window.Resources>
     <Grid Margin="24">
         <Grid.RowDefinitions>
@@ -118,13 +122,14 @@
                               IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                               HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
                               BorderBrush="#DBE2DB" Background="White"
-                              RowHeight="34" SelectionMode="Single" SelectionUnit="FullRow"
+                              RowHeight="62" SelectionMode="Single" SelectionUnit="FullRow"
                               PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
                               AutomationProperties.Name="Películas del catálogo">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Título" Binding="{Binding Titulo}" Width="3*" MinWidth="145" />
-                            <DataGridTextColumn Header="Autor" Binding="{Binding Autor}" Width="2*" MinWidth="105" />
-                            <DataGridTextColumn Header="Ingreso" Binding="{Binding FechaDeIngreso, StringFormat=d}"
+                            <DataGridTemplateColumn Header="Carátula" Width="66" CellTemplate="{StaticResource MiniaturaCaratula}" />
+                            <DataGridTextColumn Header="Título" Binding="{Binding Pelicula.Titulo}" Width="3*" MinWidth="145" />
+                            <DataGridTextColumn Header="Autor" Binding="{Binding Pelicula.Autor}" Width="2*" MinWidth="105" />
+                            <DataGridTextColumn Header="Ingreso" Binding="{Binding Pelicula.FechaDeIngreso, StringFormat=d}"
                                                 Width="Auto" MinWidth="86" />
                         </DataGrid.Columns>
                         <DataGrid.Style>
@@ -156,10 +161,11 @@
                           IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                           HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
                           BorderBrush="#DBE2DB" Background="White"
-                          RowHeight="34" SelectionMode="Single" SelectionUnit="FullRow"
+                          RowHeight="62" SelectionMode="Single" SelectionUnit="FullRow"
                           PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
                           AutomationProperties.Name="Mi lista de películas">
                     <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Carátula" Width="66" CellTemplate="{StaticResource MiniaturaCaratula}" />
                         <DataGridTextColumn Header="Título" Binding="{Binding Pelicula.Titulo}" Width="3*" MinWidth="145" />
                         <DataGridTextColumn Header="Autor" Binding="{Binding Pelicula.Autor}" Width="2*" MinWidth="105" />
                         <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="Auto" MinWidth="86" />
@@ -181,6 +187,7 @@
         </Border>
 
         <ScrollViewer Grid.Row="2" Grid.Column="2" VerticalScrollBarVisibility="Auto">
+          <StackPanel>
             <Border Padding="20" Background="White" CornerRadius="12" VerticalAlignment="Top"
                     BorderBrush="#DBE2DB" BorderThickness="1">
                 <Grid>
@@ -211,6 +218,15 @@
                     </StackPanel>
                 </Grid>
             </Border>
+            <Expander Header="Créditos" Margin="0,14,0,0">
+                <StackPanel Margin="16,10,8,8">
+                    <Image Source="{StaticResource LogoTmdb}" Width="100" Stretch="Uniform"
+                           HorizontalAlignment="Left" AutomationProperties.Name="TMDB" />
+                    <TextBlock Text="This product uses the TMDB API but is not endorsed or certified by TMDB."
+                               Margin="0,8,0,0" TextWrapping="Wrap" FontSize="13" />
+                </StackPanel>
+            </Expander>
+          </StackPanel>
         </ScrollViewer>
     </Grid>
 </Window>

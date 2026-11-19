@@ -48,6 +48,17 @@ internal static class BaseDatos
                 FechaActualizacion TEXT NOT NULL, PRIMARY KEY (UsuarioId, PeliculaId));
             """;
         cmd.ExecuteNonQuery();
+        cmd.CommandText = "SELECT COUNT(*) FROM Migraciones WHERE Nombre = 'caratula-local-v1'";
+        if ((long)cmd.ExecuteScalar()! == 0)
+        {
+            cmd.CommandText = """
+                ALTER TABLE Peliculas ADD COLUMN Caratula BLOB
+                    CHECK (Caratula IS NULL OR (typeof(Caratula) = 'blob' AND length(Caratula) BETWEEN 1 AND 8388608));
+                INSERT INTO Migraciones (Nombre) VALUES ('caratula-local-v1');
+                """;
+            cmd.ExecuteNonQuery();
+        }
+
         cmd.CommandText = "SELECT COUNT(*) FROM Migraciones WHERE Nombre = 'catalogo-json-v1'";
         if ((long)cmd.ExecuteScalar()! > 0)
         {

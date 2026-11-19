@@ -20,12 +20,20 @@
         <Border Background="White" CornerRadius="12" Padding="22" Margin="16">
             <StackPanel>
                 <StackPanel Visibility="{Binding EsFicha, Converter={StaticResource Visibilidad}}">
-                    <TextBlock Text="{Binding Titulo}" TextWrapping="Wrap" FontSize="27" FontWeight="SemiBold" />
-                    <TextBlock Text="{Binding Autor, StringFormat='Autor · {0}'}" TextWrapping="Wrap" Margin="0,8,0,0" />
-                    <TextBlock Text="{Binding Fecha, StringFormat='Ingreso al catálogo · {0}'}" Margin="0,4,0,14" />
-                    <TextBlock Text="{Binding Estado}" Foreground="#1C5045" TextWrapping="Wrap" />
-                    <TextBlock Text="Inicia sesión para añadirla a tu lista." TextWrapping="Wrap"
-                               Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}" />
+                    <DockPanel>
+                        <Image DockPanel.Dock="Left" Width="150" Height="225" Stretch="Uniform" VerticalAlignment="Top"
+                               Margin="0,0,16,0" AutomationProperties.Name="Carátula de la película"
+                               Source="{Binding Caratula, TargetNullValue={StaticResource CaratulaGenerica}}" />
+                        <StackPanel>
+                            <TextBlock Text="{Binding Titulo}" TextWrapping="Wrap" FontSize="27" FontWeight="SemiBold" />
+                            <TextBlock Text="{Binding Autor, StringFormat='Autor · {0}'}" TextWrapping="Wrap" Margin="0,8,0,0" />
+                            <TextBlock Text="{Binding Fecha, StringFormat='Ingreso al catálogo · {0}'}"
+                                       TextWrapping="Wrap" Margin="0,4,0,14" />
+                            <TextBlock Text="{Binding Estado}" Foreground="#1C5045" TextWrapping="Wrap" />
+                            <TextBlock Text="Inicia sesión para añadirla a tu lista." TextWrapping="Wrap"
+                                       Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}" />
+                        </StackPanel>
+                    </DockPanel>
                     <WrapPanel IsEnabled="{Binding PuedeInteractuar}" Margin="0,12,0,0"
                                Visibility="{Binding PuedeMarcar, Converter={StaticResource Visibilidad}}">
                         <Button x:Name="Pendiente" Content="Marcar _pendiente" Click="MarcarPendiente" />
@@ -41,6 +49,27 @@
                     <TextBox x:Name="CampoTitulo" Text="{Binding Titulo, UpdateSourceTrigger=PropertyChanged}" />
                     <Label Content="_Autor" Target="{Binding ElementName=CampoAutor}" Margin="0,8,0,0" />
                     <TextBox x:Name="CampoAutor" Text="{Binding Autor, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock Text="Carátula" FontWeight="SemiBold" Margin="0,16,0,4" />
+                    <DockPanel Margin="0,0,0,8">
+                        <Image DockPanel.Dock="Left" Width="44" Height="66" Stretch="Uniform" Margin="0,0,10,0"
+                               Source="{Binding Caratula, TargetNullValue={StaticResource CaratulaGenerica}}" />
+                        <TextBlock Text="{Binding ResumenCaratula}" TextWrapping="Wrap" VerticalAlignment="Center"
+                                   AutomationProperties.LiveSetting="Polite" />
+                    </DockPanel>
+                    <WrapPanel>
+                        <Button x:Name="BotonElegirCaratula" Content="Elegir _imagen…" Click="ElegirCaratula" />
+                        <Button Content="_Quitar carátula" Click="QuitarCaratula"
+                                IsEnabled="{Binding PuedeQuitarCaratula}" />
+                        <Button x:Name="BotonBuscarTmdb" Content="Buscar en _TMDB" Click="BuscarEnTmdb" />
+                    </WrapPanel>
+                    <StackPanel Margin="0,10,0,0"
+                                Visibility="{Binding HayResultadosTmdb, Converter={StaticResource Visibilidad}}">
+                        <Label Content="_Resultados de TMDB" Target="{Binding ElementName=CoincidenciasTmdb}" />
+                        <ComboBox x:Name="CoincidenciasTmdb" ItemsSource="{Binding ResultadosTmdb}" DisplayMemberPath="Etiqueta"
+                                  MinHeight="32" />
+                        <Button Content="_Usar carátula" Click="UsarResultadoTmdb" HorizontalAlignment="Left"
+                                Margin="0,6,0,0" />
+                    </StackPanel>
                     <Button x:Name="GuardarPelicula" Content="_Guardar" Click="Guardar" IsDefault="True"
                             HorizontalAlignment="Left" Margin="0,16,0,0" />
                 </StackPanel>
