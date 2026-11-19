@@ -7,18 +7,19 @@ namespace Movies.Services.Sql;
 internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
 {
     internal static void Insertar(SqliteConnection db, SqliteTransaction? tx, string titulo, string autor, string fecha,
-        byte[]? caratula = null)
+        byte[]? caratula = null, string sinopsis = "")
     {
         using var cmd = db.CreateCommand();
         cmd.Transaction = tx;
         cmd.CommandText = """
-            INSERT INTO Peliculas (Titulo, Autor, FechaDeIngreso, Caratula)
-            VALUES ($titulo, $autor, $fecha, $caratula)
+            INSERT INTO Peliculas (Titulo, Autor, FechaDeIngreso, Caratula, Sinopsis)
+            VALUES ($titulo, $autor, $fecha, $caratula, $sinopsis)
             """;
         cmd.Parameters.AddWithValue("$titulo", titulo);
         cmd.Parameters.AddWithValue("$autor", autor);
         cmd.Parameters.AddWithValue("$fecha", fecha);
         cmd.Parameters.Add("$caratula", SqliteType.Blob).Value = (object?)caratula ?? DBNull.Value;
+        cmd.Parameters.AddWithValue("$sinopsis", sinopsis.Trim());
         cmd.ExecuteNonQuery();
     }
 
@@ -26,7 +27,7 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
     {
         using var cmd = conexion.CreateCommand();
         cmd.CommandText = """
-            SELECT PeliculaId, Titulo, Autor, FechaDeIngreso, Caratula IS NOT NULL
+            SELECT PeliculaId, Titulo, Autor, FechaDeIngreso, Caratula IS NOT NULL, Sinopsis
             FROM Peliculas ORDER BY PeliculaId
             """;
         using var filas = cmd.ExecuteReader();
@@ -48,25 +49,27 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
         return cmd.ExecuteScalar() as byte[];
     }
 
-    public void Agregar(Usuario usuario, string titulo, string autor, byte[]? caratula = null)
+    public void Agregar(Usuario usuario, string titulo, string autor, byte[]? caratula = null, string sinopsis = "")
     {
         ExigirAdministrador(usuario);
         ValidarCampos(titulo, autor);
-        Insertar(conexion, null, titulo.Trim(), autor.Trim(), DateTimeOffset.Now.ToString("O"), caratula);
+        Insertar(conexion, null, titulo.Trim(), autor.Trim(), DateTimeOffset.Now.ToString("O"), caratula, sinopsis);
     }
 
-    public bool Editar(Usuario usuario, long id, string titulo, string autor, CambioCaratula? cambioCaratula = null)
+    public bool Editar(Usuario usuario, long id, string titulo, string autor, CambioCaratula? cambioCaratula = null,
+        string? sinopsis = null)
     {
         ExigirAdministrador(usuario);
         ValidarCampos(titulo, autor);
         using var cmd = conexion.CreateCommand();
         cmd.CommandText = cambioCaratula is null
-            ? "UPDATE Peliculas SET Titulo=$titulo, Autor=$autor WHERE PeliculaId=$id"
-            : "UPDATE Peliculas SET Titulo=$titulo, Autor=$autor, Caratula=$caratula WHERE PeliculaId=$id";
+            ? "UPDATE Peliculas SET Titulo=$titulo, Autor=$autor, Sinopsis=COALESCE($sinopsis, Sinopsis) WHERE PeliculaId=$id"
+            : "UPDATE Peliculas SET Titulo=$titulo, Autor=$autor, Sinopsis=COALESCE($sinopsis, Sinopsis), Caratula=$caratula WHERE PeliculaId=$id";
         if (cambioCaratula is not null)
             cmd.Parameters.Add("$caratula", SqliteType.Blob).Value = (object?)cambioCaratula.Imagen ?? DBNull.Value;
         cmd.Parameters.AddWithValue("$titulo", titulo.Trim());
         cmd.Parameters.AddWithValue("$autor", autor.Trim());
+        cmd.Parameters.Add("$sinopsis", SqliteType.Text).Value = (object?)sinopsis?.Trim() ?? DBNull.Value;
         cmd.Parameters.AddWithValue("$id", id);
         return cmd.ExecuteNonQuery() == 1;
     }
@@ -115,18 +118,18 @@ internal sealed class PeliculaSqlServicio(SqliteConnection conexion)
         using var cmd = conexion.CreateCommand();
         cmd.CommandText = """
             SELECT p.PeliculaId, p.Titulo, p.Autor, p.FechaDeIngreso,
-                   p.Caratula IS NOT NULL, up.Estado FROM UsuarioPelicula up
+                   p.Caratula IS NOT NULL, p.Sinopsis, up.Estado FROM UsuarioPelicula up
             JOIN Peliculas p ON p.PeliculaId=up.PeliculaId
             WHERE up.UsuarioId=$usuario ORDER BY p.Titulo, p.PeliculaId
             """;
         cmd.Parameters.AddWithValue("$usuario", usuario.Id);
         using var filas = cmd.ExecuteReader();
         var lista = new List<EntradaLista>();
-        while (filas.Read()) lista.Add(new(LeerPelicula(filas), filas.GetString(5)));
+        while (filas.Read()) lista.Add(new(LeerPelicula(filas), filas.GetString(6)));
         return lista;
     }
 
     private static Pelicula LeerPelicula(SqliteDataReader fila) =>
         new(fila.GetInt64(0), fila.GetString(1), fila.GetString(2),
-            DateTimeOffset.Parse(fila.GetString(3), CultureInfo.InvariantCulture), fila.GetBoolean(4));
+            DateTimeOffset.Parse(fila.GetString(3), CultureInfo.InvariantCulture), fila.GetBoolean(4), fila.GetString(5));
 }

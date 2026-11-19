@@ -31,6 +31,10 @@
                                        Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}" />
                         </StackPanel>
                     </DockPanel>
+                    <StackPanel Margin="0,16,0,0" Visibility="{Binding TieneSinopsis, Converter={StaticResource Visibilidad}}">
+                        <TextBlock Text="Sinopsis" FontSize="19" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding Sinopsis}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                    </StackPanel>
                     <WrapPanel IsEnabled="{Binding PuedeInteractuar}" Margin="0,12,0,0"
                                Visibility="{Binding PuedeMarcar, Converter={StaticResource Visibilidad}}">
                         <Button x:Name="Pendiente" Content="Marcar _pendiente" Click="MarcarPendiente" />
@@ -54,6 +58,11 @@
                         <Label Content="_Autor" Target="{Binding ElementName=CampoAutor}" Style="{StaticResource EtiquetaCampo}" Margin="0,10,0,0" />
                         <TextBox x:Name="CampoAutor" Text="{Binding Autor, UpdateSourceTrigger=PropertyChanged}"
                                  Style="{StaticResource Campo}" TextWrapping="Wrap" />
+                        <Label Content="_Sinopsis (opcional)" Target="{Binding ElementName=CampoSinopsis}"
+                               Style="{StaticResource EtiquetaCampo}" Margin="0,10,0,0" />
+                        <TextBox x:Name="CampoSinopsis" Text="{Binding Sinopsis, UpdateSourceTrigger=PropertyChanged}"
+                                 Style="{StaticResource Campo}" AcceptsReturn="True" TextWrapping="Wrap" Height="92"
+                                 VerticalContentAlignment="Stretch" VerticalScrollBarVisibility="Auto" />
                         <Border Margin="0,16,0,0" CornerRadius="9" Background="#EAF5EF" Padding="12">
                             <StackPanel>
                                 <DockPanel>
@@ -74,7 +83,7 @@
                                 <StackPanel Margin="0,10,0,0" Visibility="{Binding HayResultadosTmdb, Converter={StaticResource Visibilidad}}">
                                     <Label Content="_Resultados de TMDB" Target="{Binding ElementName=CoincidenciasTmdb}" Style="{StaticResource EtiquetaCampo}" />
                                     <ComboBox x:Name="CoincidenciasTmdb" ItemsSource="{Binding ResultadosTmdb}" DisplayMemberPath="Etiqueta" MinHeight="32" />
-                                    <Button Content="_Usar carátula" Click="UsarResultadoTmdb" HorizontalAlignment="Left" Margin="0,6,0,0" />
+                                    <Button Content="_Usar resultado" Click="UsarResultadoTmdb" HorizontalAlignment="Left" Margin="0,6,0,0" />
                                 </StackPanel>
                             </StackPanel>
                         </Border>

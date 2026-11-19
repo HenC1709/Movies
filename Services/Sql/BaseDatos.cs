@@ -59,6 +59,16 @@ internal static class BaseDatos
             cmd.ExecuteNonQuery();
         }
 
+        cmd.CommandText = "SELECT COUNT(*) FROM Migraciones WHERE Nombre = 'sinopsis-v1'";
+        if ((long)cmd.ExecuteScalar()! == 0)
+        {
+            cmd.CommandText = """
+                ALTER TABLE Peliculas ADD COLUMN Sinopsis TEXT NOT NULL DEFAULT '';
+                INSERT INTO Migraciones (Nombre) VALUES ('sinopsis-v1');
+                """;
+            cmd.ExecuteNonQuery();
+        }
+
         cmd.CommandText = "SELECT COUNT(*) FROM Migraciones WHERE Nombre = 'catalogo-json-v1'";
         if ((long)cmd.ExecuteScalar()! > 0)
         {

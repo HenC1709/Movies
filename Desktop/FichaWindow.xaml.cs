@@ -72,9 +72,11 @@ public partial class FichaWindow : DialogoAnimado
 
     private async void UsarResultadoTmdb(object sender, RoutedEventArgs e)
     {
-        if (CoincidenciasTmdb.SelectedItem is ResultadoTmdb resultado)
-            await ficha.ElegirResultadoTmdbAsync(resultado);
+        if (CoincidenciasTmdb.SelectedItem is not ResultadoTmdb resultado) return;
+        await ficha.ElegirResultadoTmdbAsync(resultado);
         if (ficha.HayResultadosTmdb) CoincidenciasTmdb.Focus();
+        else if (string.IsNullOrWhiteSpace(ficha.Autor)) CampoAutor.Focus();
+        else if (resultado.TieneSinopsis) CampoSinopsis.Focus();
         else GuardarPelicula.Focus();
     }
 

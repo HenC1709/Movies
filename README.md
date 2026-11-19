@@ -1,6 +1,28 @@
 # Movies
 
-Videoteca de consola en C# y .NET 10. El catálogo es compartido y cada cuenta tiene su propia lista de películas pendientes y vistas.
+Videoteca en C# y .NET 10 con una aplicación de escritorio WPF y una versión de consola. El catálogo es compartido y cada cuenta tiene su propia lista de películas pendientes y vistas.
+
+## Capturas de la aplicación
+
+### Catálogo
+
+![Catálogo de Movies con carátulas y búsqueda por título](Images/Captura%20de%20pantalla%202026-11-19%20195135.png)
+
+### Ficha y lista personal
+
+| Ficha de película | Mi lista |
+| --- | --- |
+| ![Ficha de Interestelar con autor, sinopsis y opciones de lista](Images/Captura%20de%20pantalla%202026-11-19%20195147.png) | ![Película marcada como pendiente en Mi lista](Images/Captura%20de%20pantalla%202026-11-19%20195201.png) |
+
+### Agregar y editar películas
+
+| Agregar película | Editar película |
+| --- | --- |
+| ![Formulario de alta con campos para título, autor, sinopsis y carátula](Images/Captura%20de%20pantalla%202026-11-19%20195140.png) | ![Formulario de edición con los datos de una película guardada](Images/Captura%20de%20pantalla%202026-11-19%20195156.png) |
+
+### Perfil de usuario
+
+![Perfil de una cuenta administradora con la opción de cerrar sesión](Images/Captura%20de%20pantalla%202026-11-19%20195217.png)
 
 ## Ejecutar
 
@@ -26,7 +48,7 @@ En el formulario de administración, **Elegir imagen** permite adjuntar un JPEG 
 
 El catálogo, **Mi lista** y la ficha muestran la imagen guardada. Si la película no tiene imagen o Movies no puede leerla, aparece una carátula genérica.
 
-### Buscar carátulas en TMDB
+### Completar datos con TMDB
 
 Configura `TMDB_READ_ACCESS_TOKEN` con tu **API Read Access Token** de [los ajustes de TMDB](https://www.themoviedb.org/settings/api). En PowerShell puedes cargarlo en la sesión actual antes de abrir Movies:
 
@@ -35,7 +57,7 @@ $env:TMDB_READ_ACCESS_TOKEN = Read-Host 'API Read Access Token de TMDB' -MaskInp
 dotnet run --project Desktop/Movies.Desktop.csproj
 ```
 
-En el formulario de una película, escribe el título, pulsa **Buscar en TMDB** y elige un resultado por título y año. **Usar carátula** descarga la imagen y permite revisarla antes de pulsar **Guardar**. Después de guardar, la carátula se puede ver sin conexión.
+En **Agregar película** o **Editar película**, escribe el título, pulsa **Buscar en TMDB** y elige una coincidencia por título y año. **Usar resultado** rellena **Autor** con los nombres de dirección que figuran en los créditos y añade la carátula y la sinopsis cuando estén disponibles. Puedes revisar y editar esos datos antes de guardar. La ficha muestra los datos guardados sin conexión.
 
 ## Datos locales
 

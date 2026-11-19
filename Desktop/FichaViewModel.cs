@@ -28,6 +28,8 @@ internal sealed class FichaViewModel(
     public string Encabezado => EsFicha ? "Ficha de película" : pelicula is null ? "Agregar película" : "Editar película";
     public string Titulo { get; set; } = pelicula?.Titulo ?? "";
     public string Autor { get; set; } = pelicula?.Autor ?? "";
+    public string Sinopsis { get; set; } = pelicula?.Sinopsis ?? "";
+    public bool TieneSinopsis => !string.IsNullOrWhiteSpace(Sinopsis);
     public string Fecha => pelicula?.FechaDeIngreso.ToString("dd/MM/yyyy") ?? "";
     public string Estado { get; private set; } = "";
     public string Mensaje { get; private set; } = "";
@@ -99,7 +101,7 @@ internal sealed class FichaViewModel(
         });
         if (ok && !HayResultadosTmdb)
         {
-            Mensaje = "TMDB no encontró películas con carátula para ese título.";
+            Mensaje = "TMDB no encontró películas para ese título.";
             NotificarCambios();
         }
     }
@@ -107,18 +109,49 @@ internal sealed class FichaViewModel(
     public async Task ElegirResultadoTmdbAsync(ResultadoTmdb resultado)
     {
         if (!EsFormulario || Ocupado || usuario?.Rol != Rol.Admin || !ResultadosTmdb.Contains(resultado)) return;
-        await EjecutarAsync(async () =>
+        string? token = Environment.GetEnvironmentVariable("TMDB_READ_ACCESS_TOKEN")?.Trim();
+        if (string.IsNullOrWhiteSpace(token) || token.Any(char.IsWhiteSpace))
         {
-            byte[] imagen = await tmdb.DescargarAsync(resultado);
-            var vista = await Task.Run(() =>
+            Mensaje = "Configura TMDB_READ_ACCESS_TOKEN con el token de lectura y vuelve a abrir Movies.";
+            NotificarCambios();
+            return;
+        }
+
+        string direccion = "";
+        bool falloCreditos = false;
+        bool aplicado = await EjecutarAsync(async () =>
+        {
+            if (resultado.Sinopsis?.Trim() is { Length: > 0 } sinopsis)
+                Sinopsis = sinopsis;
+            try
             {
-                ArchivoCaratula.Validar(imagen);
-                return ArchivoCaratula.ParaVista(imagen, 300);
-            });
-            AplicarCaratula(imagen, vista, $"TMDB · {resultado.Etiqueta}");
+                direccion = await tmdb.BuscarDireccionAsync(resultado, token);
+                if (direccion.Length > 0) Autor = direccion;
+            }
+            catch (Exception error) when (error is HttpRequestException or OperationCanceledException or JsonException or IOException)
+            {
+                falloCreditos = true;
+            }
+            if (resultado.TieneCaratula)
+            {
+                byte[] imagen = await tmdb.DescargarAsync(resultado);
+                var vista = await Task.Run(() =>
+                {
+                    ArchivoCaratula.Validar(imagen);
+                    return ArchivoCaratula.ParaVista(imagen, 300);
+                });
+                AplicarCaratula(imagen, vista, $"TMDB · {resultado.Etiqueta}");
+            }
             ResultadosTmdb = [];
             return true;
         });
+        if (aplicado && direccion.Length == 0)
+        {
+            Mensaje = falloCreditos
+                ? "No se pudieron consultar los créditos de TMDB. Puedes completar Autor a mano."
+                : "TMDB no tiene un crédito de dirección para este resultado. Puedes completar Autor a mano.";
+            NotificarCambios();
+        }
     }
 
     private void AplicarCaratula(byte[] imagen, ImageSource? vista, string nombre)
@@ -171,6 +204,7 @@ internal sealed class FichaViewModel(
         if (!EsFormulario || usuario?.Rol != Rol.Admin) return Task.FromResult(false);
         string titulo = Titulo.Trim();
         string autor = Autor.Trim();
+        string sinopsis = Sinopsis.Trim();
         if (titulo.Length == 0 || autor.Length == 0)
         {
             Mensaje = "Escribe el título y el autor.";
@@ -180,8 +214,8 @@ internal sealed class FichaViewModel(
 
         return EjecutarAsync(() => catalogo.ConsultarAsync(servicio =>
         {
-            if (pelicula is not null) return servicio.Editar(usuario, pelicula.Id, titulo, autor, cambioCaratula);
-            servicio.Agregar(usuario, titulo, autor, cambioCaratula?.Imagen);
+            if (pelicula is not null) return servicio.Editar(usuario, pelicula.Id, titulo, autor, cambioCaratula, sinopsis);
+            servicio.Agregar(usuario, titulo, autor, cambioCaratula?.Imagen, sinopsis);
             return true;
         }));
     }
