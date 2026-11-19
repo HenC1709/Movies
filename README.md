@@ -1,3 +1,5 @@
+# Proyecto desarrollado originalmente por mí y posteriormente refactorizado con asistencia de IA
+
 # Movies
 
 Videoteca en C# y .NET 10 con una aplicación de escritorio WPF y una versión de consola. El catálogo es compartido y cada cuenta tiene su propia lista de películas pendientes y vistas.
