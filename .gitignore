@@ -5,8 +5,8 @@
 /Core/obj/
 /Desktop/bin/
 /Desktop/obj/
-.bin/
-.obj/
+/bin/
+/obj/
 
 # Credenciales y configuración local de TMDB
 .env

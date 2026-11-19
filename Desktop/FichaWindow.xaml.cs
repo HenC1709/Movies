@@ -3,9 +3,10 @@ using Microsoft.Win32;
 
 namespace Movies.Desktop;
 
-public partial class FichaWindow : Window
+public partial class FichaWindow : DialogoAnimado
 {
     private readonly FichaViewModel ficha;
+    protected override bool Ocupado => ficha.Ocupado;
     internal bool SolicitoEditar { get; private set; }
 
     internal FichaWindow(FichaViewModel ficha)
@@ -23,7 +24,6 @@ public partial class FichaWindow : Window
                 else Cerrar.Focus();
             }
         };
-        Closing += (_, e) => e.Cancel = ficha.Ocupado;
     }
 
     private void Editar(object sender, RoutedEventArgs e)

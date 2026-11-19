@@ -6,6 +6,8 @@ namespace Movies.Desktop;
 
 internal sealed record FilaPelicula(Pelicula Pelicula, ImageSource? Caratula, string? Estado)
 {
+    public int VariantePortada => (int)(Pelicula.Id % 4);
+
     internal static FilaPelicula Crear(PeliculaSqlServicio servicio, Pelicula pelicula, string? estado = null) =>
-        new(pelicula, pelicula.TieneCaratula ? ArchivoCaratula.ParaVista(servicio.LeerCaratula(pelicula.Id), 96) : null, estado);
+        new(pelicula, pelicula.TieneCaratula ? ArchivoCaratula.ParaVista(servicio.LeerCaratula(pelicula.Id), 340) : null, estado);
 }

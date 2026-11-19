@@ -8,5 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Core/Movies.Core.csproj" />
+    <Resource Include="Fuentes/*.ttf" />
+    <None Update="Fuentes/OFL.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

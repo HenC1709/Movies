@@ -32,6 +32,7 @@ internal sealed class FichaViewModel(
     public string Estado { get; private set; } = "";
     public string Mensaje { get; private set; } = "";
     public ImageSource? Caratula { get; private set; }
+    public int VariantePortada => (int)((pelicula?.Id ?? 0) % 4);
     public IReadOnlyList<ResultadoTmdb> ResultadosTmdb { get; private set; } = [];
     public bool HayResultadosTmdb => ResultadosTmdb.Count > 0;
     public bool PuedeQuitarCaratula => cambioCaratula is null ? pelicula?.TieneCaratula == true : cambioCaratula.Imagen is not null;

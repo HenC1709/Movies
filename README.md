@@ -6,7 +6,7 @@ Videoteca de consola en C# y .NET 10. El catálogo es compartido y cada cuenta t
 
 Desde la carpeta del proyecto, ejecuta `dotnet run --project Movies.csproj`. La primera compilación descarga de NuGet el proveedor de SQLite.
 
-Para abrir Movies en WPF desde Windows, ejecuta `dotnet run --project Desktop/Movies.Desktop.csproj`. El catálogo y la búsqueda por título están disponibles desde que abres la ventana. Usa **Ver todo** para limpiar el filtro y recargar el catálogo. Puedes iniciar sesión con las cuentas de consola o registrar una nueva. Ambas aplicaciones usan la misma biblioteca y la misma base local, y respetan `MOVIES_DATA_DIR`.
+Para abrir Movies en WPF desde Windows, ejecuta `dotnet run --project Desktop/Movies.Desktop.csproj`. Usa la barra superior para buscar por título. Pulsa **Catálogo** para limpiar el filtro y volver a ver todas las películas. Desde **Usuario** puedes iniciar sesión con una cuenta de consola o registrar una nueva. Ambas aplicaciones usan la misma biblioteca y la misma base local, y respetan `MOVIES_DATA_DIR`.
 
 ## Primer inicio
 
@@ -20,7 +20,7 @@ Registra la primera cuenta en una instalación local de confianza. Esa cuenta se
 
 Como invitado puedes buscar y listar películas. Con una sesión abierta, consulta el ID de una película en el catálogo o en los resultados, elige **Marcar película** y selecciona **Pendiente** o **Vista**. Para cambiar el estado repite la operación con el mismo ID. **Mi lista** muestra las selecciones de la cuenta activa.
 
-En WPF, selecciona una película y pulsa **Ver ficha**, Enter o haz doble clic. Con una sesión abierta, marca la película como **Pendiente** o **Vista** desde su ficha. **Mi lista** muestra los estados de la cuenta activa. Las cuentas administradoras pueden usar **Agregar película** junto a la sesión o **Editar** desde la ficha.
+En WPF, pasa el puntero sobre una carátula o enfócala con Tab para ver el título. Haz clic o pulsa Enter para abrir su ficha. Con una sesión abierta, puedes marcarla como **Pendiente** o **Vista** y consultar su estado en **Mi lista**, en la barra superior. Las cuentas administradoras tienen **Agregar película** en la barra inferior y **Editar** en la ficha. Al guardar, la barra inferior confirma el título.
 
 En el formulario de administración, **Elegir imagen** permite adjuntar un JPEG o PNG de hasta 8 MiB y 4096 píxeles por lado. **Quitar carátula** borra la imagen cuando guardas. Movies conserva su propia copia dentro de SQLite, junto con el resto de los datos.
 

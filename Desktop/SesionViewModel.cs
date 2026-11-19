@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Globalization;
 using Microsoft.Data.Sqlite;
 using Movies.Models;
 using Movies.Services.Sql;
@@ -30,6 +31,7 @@ internal sealed class SesionViewModel : INotifyPropertyChanged
     internal Usuario? UsuarioActual => usuario;
     public bool EsAdministrador => usuario?.Rol == Rol.Admin;
     public string NombreSesion => usuario?.Nombre ?? "";
+    public string InicialSesion => StringInfo.GetNextTextElement(NombreSesion).ToUpper(CultureInfo.CurrentCulture);
     public string RolSesion => EsAdministrador ? "Administrador" : "Usuario";
     public string TituloFormulario => registro ? "Crear cuenta" : "Iniciar sesión";
     public string AccionAlternativa => registro ? "Ya tengo cuenta" : "Crear cuenta";

@@ -1,232 +1,273 @@
 <Window x:Class="Movies.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Movies" Width="1040" Height="680" MinWidth="760" MinHeight="480"
-        WindowStartupLocation="CenterScreen" Background="#F3F3EF"
-        FontFamily="Segoe UI" FontSize="15" Foreground="#172C29"
+        Title="Movies" Width="1040" Height="680" MinWidth="740" MinHeight="460"
+        WindowStartupLocation="CenterScreen" Background="{StaticResource Perla}"
+        FontFamily="Segoe UI" FontSize="15" Foreground="{StaticResource Tinta}"
         UseLayoutRounding="True" Language="es-VE">
     <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="Height" Value="42" />
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="BorderBrush" Value="#909E98" />
+        <Style x:Key="Navegacion" TargetType="Button" BasedOn="{StaticResource Accion}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Padding" Value="12,6" />
         </Style>
-        <Style TargetType="PasswordBox">
-            <Setter Property="Height" Value="42" />
-            <Setter Property="Padding" Value="10,0" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="BorderBrush" Value="#909E98" />
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="MinHeight" Value="40" />
-            <Setter Property="Padding" Value="16,6" />
-            <Setter Property="Background" Value="#1C5045" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="FontWeight" Value="SemiBold" />
+        <Style x:Key="Portada" TargetType="Button">
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="AutomationProperties.Name" Value="{Binding Pelicula.Titulo}" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border x:Name="Marco" CornerRadius="6" Padding="{TemplateBinding Padding}"
-                                BorderThickness="2" BorderBrush="Transparent"
-                                Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                              RecognizesAccessKey="True" />
-                        </Border>
+                        <Viewbox Stretch="Uniform">
+                            <Grid Width="160" Height="240" Background="{StaticResource Tinta}">
+                                <Grid.Clip>
+                                    <RectangleGeometry Rect="0,0,160,240" RadiusX="8" RadiusY="8" />
+                                </Grid.Clip>
+                                <Image Style="{StaticResource ImagenPortada}" Stretch="UniformToFill" />
+                                <Grid x:Name="Rotulo" Visibility="Collapsed">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Offset="0" Color="#00102540" />
+                                            <GradientStop Offset=".32" Color="#10102540" />
+                                            <GradientStop Offset=".73" Color="#E30C2038" />
+                                            <GradientStop Offset="1" Color="#FC0C2038" />
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <StackPanel VerticalAlignment="Bottom" Margin="13,12">
+                                        <TextBlock Text="{Binding Pelicula.Titulo}" Foreground="White" FontSize="17"
+                                                   FontWeight="SemiBold" TextWrapping="Wrap" MaxHeight="175" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{Binding Estado}" Foreground="{StaticResource Cian}" FontSize="12"
+                                                   FontWeight="SemiBold">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Estado}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </StackPanel>
+                                    <Border BorderBrush="{StaticResource Cian}" BorderThickness="2" CornerRadius="8" />
+                                </Grid>
+                            </Grid>
+                        </Viewbox>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Marco" Property="Background" Value="#2B695B" />
+                                <Setter TargetName="Rotulo" Property="Visibility" Value="Visible" />
                             </Trigger>
                             <Trigger Property="IsKeyboardFocused" Value="True">
-                                <Setter TargetName="Marco" Property="BorderBrush" Value="#D79E4A" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter TargetName="Marco" Property="Opacity" Value="0.55" />
+                                <Setter TargetName="Rotulo" Property="Visibility" Value="Visible" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="BotonConSeleccion" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-            <Style.Triggers>
-                <Trigger Property="Tag" Value="{x:Null}">
-                    <Setter Property="IsEnabled" Value="False" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        <DataTemplate x:Key="MiniaturaCaratula">
-            <Image Source="{Binding Caratula, TargetNullValue={StaticResource CaratulaGenerica}}"
-                   Width="36" Height="54" Stretch="Uniform" Margin="4,3" />
-        </DataTemplate>
     </Window.Resources>
-    <Grid Margin="24">
+    <Grid Background="{StaticResource Perla}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="18" />
-            <ColumnDefinition Width="290" />
-        </Grid.ColumnDefinitions>
-        <TextBlock Text="Movies" FontSize="36" FontWeight="Bold" Margin="0,0,0,16"
-                   Grid.ColumnSpan="3" />
 
-        <DockPanel Grid.Row="1" Grid.ColumnSpan="3" Margin="0,0,0,12" LastChildFill="True">
-            <Button DockPanel.Dock="Left" Content="_Catálogo" Click="MostrarCatalogo" />
-            <Button DockPanel.Dock="Left" Content="_Mi lista" Click="MostrarMiLista" Margin="8,0,0,0"
-                    Visibility="{Binding TieneSesion, Converter={StaticResource Visibilidad}}" />
-            <TextBlock x:Name="Aviso" Margin="12,0,0,0" VerticalAlignment="Center" TextWrapping="Wrap"
-                       Foreground="#1C5045" AutomationProperties.LiveSetting="Polite" />
-        </DockPanel>
-
-        <Border x:Name="PanelCatalogo" Grid.Row="2" Padding="20" Background="White"
-                CornerRadius="12" BorderBrush="#DBE2DB" BorderThickness="1">
-          <Grid>
-            <Grid Visibility="{Binding ViendoCatalogo, Converter={StaticResource Visibilidad}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <TextBlock Text="Catálogo" FontSize="24" FontWeight="SemiBold" />
-                <Label Grid.Row="1" Content="_Título de película" Target="{Binding ElementName=Consulta}"
-                       Padding="0,10,0,4" />
-                <Grid Grid.Row="2" Margin="0,0,0,16" IsEnabled="{Binding PuedeBuscar}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBox x:Name="Consulta" Text="{Binding Consulta, UpdateSourceTrigger=PropertyChanged}"
-                             KeyDown="BuscarConEnter" />
-                    <Button Grid.Column="1" Content="Buscar" Click="Buscar" Margin="8,0,0,0" />
-                    <Button Grid.Column="2" Content="Ver todo" Click="VerTodo" Margin="8,0,0,0"
-                            Background="#345C54" />
-                </Grid>
-                <Grid Grid.Row="3">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <DockPanel Margin="0,0,0,6">
-                        <Button DockPanel.Dock="Right" Content="Ver _ficha" Click="AbrirFicha"
-                                Style="{StaticResource BotonConSeleccion}"
-                                Tag="{Binding ElementName=TablaCatalogo, Path=SelectedItem}" />
-                        <TextBlock Text="{Binding Resumen}" Foreground="#485C55" VerticalAlignment="Center" />
-                    </DockPanel>
-                    <DataGrid x:Name="TablaCatalogo" Grid.Row="1" ItemsSource="{Binding Peliculas}" AutoGenerateColumns="False"
-                              IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                              HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
-                              BorderBrush="#DBE2DB" Background="White"
-                              RowHeight="62" SelectionMode="Single" SelectionUnit="FullRow"
-                              PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
-                              AutomationProperties.Name="Películas del catálogo">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Carátula" Width="66" CellTemplate="{StaticResource MiniaturaCaratula}" />
-                            <DataGridTextColumn Header="Título" Binding="{Binding Pelicula.Titulo}" Width="3*" MinWidth="145" />
-                            <DataGridTextColumn Header="Autor" Binding="{Binding Pelicula.Autor}" Width="2*" MinWidth="105" />
-                            <DataGridTextColumn Header="Ingreso" Binding="{Binding Pelicula.FechaDeIngreso, StringFormat=d}"
-                                                Width="Auto" MinWidth="86" />
-                        </DataGrid.Columns>
-                        <DataGrid.Style>
-                            <Style TargetType="DataGrid">
+        <Border Background="{StaticResource Noche}" Padding="22,13">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,20,0">
+                    <Path Width="27" Height="27" Stretch="Uniform" Fill="{StaticResource Cian}"
+                          Data="F0 M0,8 L25,1 26,6 1,13 Z M4,7 L7,6 11,10 8,11 Z M14,4 L17,3 21,7 18,8 Z M2,14 H27 V29 H2 Z M12,17 L12,26 20,21.5 Z" />
+                    <TextBlock Text="Movies" Foreground="White" FontSize="23" FontWeight="Bold" Margin="8,0,0,0" />
+                </StackPanel>
+                <StackPanel x:Name="Navegacion" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="_Catálogo" Click="MostrarCatalogo">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource Navegacion}">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Peliculas.Count}" Value="0">
-                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    <DataTrigger Binding="{Binding ViendoCatalogo}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource AzulRey}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </DataGrid.Style>
-                    </DataGrid>
-                    <TextBlock Grid.Row="1" Text="{Binding Estado}" AutomationProperties.LiveSetting="Polite"
-                               TextWrapping="Wrap" Foreground="#485C55" VerticalAlignment="Top" />
+                        </Button.Style>
+                    </Button>
+                    <Button Content="_Mi lista" Click="MostrarMiLista" Margin="3,0,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource Navegacion}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViendoLista}" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource AzulRey}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+                <Grid Grid.Column="2" DataContext="{Binding DataContext, ElementName=Navegacion}" Margin="14,0"
+                      Visibility="{Binding ViendoCatalogo, Converter={StaticResource Visibilidad}}">
+                    <Border HorizontalAlignment="Stretch" MaxWidth="360" Background="{StaticResource Superficie}" CornerRadius="7"
+                            VerticalAlignment="Center">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Click="Buscar" IsEnabled="{Binding PuedeBuscar}"
+                                    Style="{StaticResource AccionSecundaria}" Padding="10,4" ToolTip="Buscar" AutomationProperties.Name="Buscar">
+                                <Path Stroke="{StaticResource AzulRey}" StrokeThickness="2" StrokeEndLineCap="Round"
+                                      Data="M13,13 L18,18 M14,8 A6,6 0 1 1 2,8 A6,6 0 1 1 14,8" />
+                            </Button>
+                            <Grid Margin="10,0,4,0">
+                                <TextBox x:Name="Consulta" Text="{Binding Consulta, UpdateSourceTrigger=PropertyChanged}"
+                                         KeyDown="BuscarConEnter" Background="Transparent" BorderThickness="0"
+                                         Padding="2,0" VerticalContentAlignment="Center" Foreground="{StaticResource Tinta}"
+                                         AutomationProperties.Name="Buscar por título" />
+                                <TextBlock Text="Buscar por título" IsHitTestVisible="False" Foreground="#536477"
+                                           VerticalAlignment="Center" Margin="4,0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=Consulta}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
                 </Grid>
+                <Button Grid.Column="3" Click="AbrirCuenta" VerticalAlignment="Center"
+                        ToolTip="Cuenta de usuario" AutomationProperties.Name="Cuenta de usuario" Padding="7,3,11,3" Background="#DBF3EB"
+                        Foreground="{StaticResource Tinta}" Style="{StaticResource Navegacion}">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="26" Height="26" CornerRadius="13" Background="{StaticResource Esmeralda}">
+                            <Grid>
+                                <Path Stroke="White" StrokeThickness="1.6" Stretch="Uniform" Width="14" Height="14"
+                                      Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}"
+                                      Data="M8,1 A3,3 0 1 1 8,7 A3,3 0 1 1 8,1 Z M1,16 C1,8 15,8 15,16" />
+                                <TextBlock Text="{Binding InicialSesion}" Foreground="White" FontFamily="{StaticResource FuenteMovies}"
+                                           FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                        <TextBlock Margin="7,0,0,0" MaxWidth="110" VerticalAlignment="Center" TextTrimming="CharacterEllipsis">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{Binding NombreSesion}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding EsInvitado}" Value="True">
+                                            <Setter Property="Text" Value="Usuario" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Button>
             </Grid>
-            <Grid Visibility="{Binding ViendoLista, Converter={StaticResource Visibilidad}}">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <DockPanel Margin="0,0,0,16">
-                    <Button DockPanel.Dock="Right" Content="Ver _ficha" Click="AbrirFicha"
-                            Style="{StaticResource BotonConSeleccion}"
-                            Tag="{Binding ElementName=TablaLista, Path=SelectedItem}" />
-                    <TextBlock Text="Mi lista" FontSize="24" FontWeight="SemiBold" VerticalAlignment="Center" />
-                </DockPanel>
-                <DataGrid x:Name="TablaLista" Grid.Row="1" ItemsSource="{Binding MiLista}" AutoGenerateColumns="False"
-                          IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
-                          HorizontalGridLinesBrush="#E6EBE7" AlternatingRowBackground="#F6F8F6"
-                          BorderBrush="#DBE2DB" Background="White"
-                          RowHeight="62" SelectionMode="Single" SelectionUnit="FullRow"
-                          PreviewKeyDown="FichaConEnter" MouseDoubleClick="FichaConDobleClic"
-                          AutomationProperties.Name="Mi lista de películas">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Carátula" Width="66" CellTemplate="{StaticResource MiniaturaCaratula}" />
-                        <DataGridTextColumn Header="Título" Binding="{Binding Pelicula.Titulo}" Width="3*" MinWidth="145" />
-                        <DataGridTextColumn Header="Autor" Binding="{Binding Pelicula.Autor}" Width="2*" MinWidth="105" />
-                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="Auto" MinWidth="86" />
-                    </DataGrid.Columns>
-                    <DataGrid.Style>
-                        <Style TargetType="DataGrid">
+        </Border>
+
+        <Grid Grid.Row="1" Background="{StaticResource FondoGaleria}" ClipToBounds="True" DataContext="{Binding DataContext, ElementName=Navegacion}">
+            <Grid.Resources>
+                <Style x:Key="ArteGaleria" TargetType="Image">
+                    <Setter Property="Source" Value="{StaticResource Proyector}" />
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ViendoLista}" Value="True">
+                            <Setter Property="Source" Value="{StaticResource Entradas}" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Resources>
+            <Image Width="260" Height="148" Margin="0,0,32,20" HorizontalAlignment="Right" VerticalAlignment="Bottom" Opacity=".17">
+                <Image.Style>
+                    <Style TargetType="Image" BasedOn="{StaticResource ArteGaleria}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding FilasVisibles.Count}" Value="0">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            <ScrollViewer x:Name="Desplazamiento" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                          Focusable="False">
+                <ItemsControl Margin="16,15" VerticalAlignment="Top" ItemsSource="{Binding FilasVisibles}" AutomationProperties.Name="Películas">
+                    <ItemsControl.Style>
+                        <Style TargetType="ItemsControl">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding MiLista.Count}" Value="0">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                <DataTrigger Binding="{Binding FilasVisibles.Count}" Value="1">
+                                    <Setter Property="MaxWidth" Value="238" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding FilasVisibles.Count}" Value="2">
+                                    <Setter Property="MaxWidth" Value="464" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding FilasVisibles.Count}" Value="3">
+                                    <Setter Property="MaxWidth" Value="620" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </DataGrid.Style>
-                </DataGrid>
-                <TextBlock Grid.Row="1" Text="{Binding EstadoLista}" AutomationProperties.LiveSetting="Polite"
-                           Foreground="#485C55" TextWrapping="Wrap" VerticalAlignment="Top" />
-            </Grid>
-          </Grid>
-        </Border>
-
-        <ScrollViewer Grid.Row="2" Grid.Column="2" VerticalScrollBarVisibility="Auto">
-          <StackPanel>
-            <Border Padding="20" Background="White" CornerRadius="12" VerticalAlignment="Top"
-                    BorderBrush="#DBE2DB" BorderThickness="1">
-                <Grid>
-                    <StackPanel Visibility="{Binding EsInvitado, Converter={StaticResource Visibilidad}}"
-                                IsEnabled="{Binding PuedeInteractuar}" KeyDown="AccederConEnter">
-                        <TextBlock Text="{Binding TituloFormulario}" FontSize="24" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding Ayuda}" TextWrapping="Wrap" Foreground="#485C55"
-                                   Margin="0,6,0,14" />
-                        <Label Content="_Nombre" Target="{Binding ElementName=Nombre}" Padding="0,4" />
-                        <TextBox x:Name="Nombre" Text="{Binding Nombre, UpdateSourceTrigger=PropertyChanged}"
-                                 Margin="0,0,0,10" />
-                        <Label Content="_Contraseña" Target="{Binding ElementName=Clave}" Padding="0,4" />
-                        <PasswordBox x:Name="Clave" />
-                        <TextBlock Text="{Binding Mensaje}" AutomationProperties.LiveSetting="Polite"
-                                   Foreground="#8C3D26" TextWrapping="Wrap" Margin="0,8,0,12" />
-                        <Button Content="{Binding TituloFormulario}" Click="Acceder" />
-                        <Button Content="{Binding AccionAlternativa}" Click="CambiarFormulario"
-                                Background="#345C54" Margin="0,8,0,0" />
-                    </StackPanel>
-                    <StackPanel Visibility="{Binding TieneSesion, Converter={StaticResource Visibilidad}}">
-                        <TextBlock Text="Sesión iniciada" FontSize="24" FontWeight="SemiBold" />
-                        <TextBlock Text="{Binding NombreSesion}" FontSize="18" TextWrapping="Wrap"
-                                   Margin="0,10,0,2" />
-                        <TextBlock Text="{Binding RolSesion}" Foreground="#485C55" />
-                        <Button Content="_Agregar película" Click="AgregarPelicula" Margin="0,16,0,0"
-                                Visibility="{Binding EsAdministrador, Converter={StaticResource Visibilidad}}" />
-                        <Button Content="Cerrar sesión" Click="CerrarSesion" Margin="0,8,0,0" />
-                    </StackPanel>
-                </Grid>
-            </Border>
-            <Expander Header="Créditos" Margin="0,14,0,0">
-                <StackPanel Margin="16,10,8,8">
-                    <Image Source="{StaticResource LogoTmdb}" Width="100" Stretch="Uniform"
-                           HorizontalAlignment="Left" AutomationProperties.Name="TMDB" />
-                    <TextBlock Text="This product uses the TMDB API but is not endorsed or certified by TMDB."
-                               Margin="0,8,0,0" TextWrapping="Wrap" FontSize="13" />
+                    </ItemsControl.Style>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="5" SizeChanged="AjustarColumnas" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Style="{StaticResource Portada}" Click="AbrirFicha" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="420" Margin="24" Padding="24,18"
+                    Background="{StaticResource Superficie}" BorderBrush="{StaticResource Linea}" BorderThickness="1" CornerRadius="14">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding MensajeVista}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <StackPanel>
+                    <Image Width="112" Height="64" Style="{StaticResource ArteGaleria}" />
+                    <TextBlock Text="{Binding MensajeVista}" AutomationProperties.LiveSetting="Polite"
+                               FontFamily="{StaticResource FuenteMovies}" FontSize="18" FontWeight="SemiBold"
+                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,12,0,0" />
+                    <Button Click="MostrarCatalogo" Margin="0,12,0,0" HorizontalAlignment="Center"
+                            Visibility="{Binding PuedeExplorarCatalogo, Converter={StaticResource Visibilidad}}">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AccionSecundaria}">
+                                <Setter Property="Content" Value="Ver todo el catálogo" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ViendoLista}" Value="True">
+                                        <Setter Property="Content" Value="Explorar el catálogo" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
-            </Expander>
-          </StackPanel>
-        </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" MinHeight="56" Background="{StaticResource Superficie}" BorderBrush="{StaticResource Linea}"
+                BorderThickness="0,1,0,0" Padding="22,10">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" x:Name="BotonAgregar" Content="＋  _Agregar película" Click="AgregarPelicula"
+                        Style="{StaticResource Accion}" Background="{StaticResource Esmeralda}"
+                        Visibility="{Binding EsAdministrador, Converter={StaticResource Visibilidad}}" />
+                <TextBlock DockPanel.Dock="Left" Text="{Binding DataContext.ResumenVista, ElementName=Navegacion}" Margin="0,0,18,0"
+                           VerticalAlignment="Center" Foreground="#536477" />
+                <TextBlock x:Name="Aviso" TextWrapping="Wrap" VerticalAlignment="Center" FontWeight="SemiBold"
+                           Foreground="{StaticResource Esmeralda}" AutomationProperties.LiveSetting="Polite" />
+            </DockPanel>
+        </Border>
     </Grid>
 </Window>

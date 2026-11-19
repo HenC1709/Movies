@@ -9,6 +9,8 @@ namespace Movies.Desktop;
 internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
 {
     private bool cargando;
+    private bool busquedaSinResultados;
+    private bool listaVacia;
     private int revisionCatalogo;
     private int revisionLista;
 
@@ -16,13 +18,21 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
 
     public string Consulta { get; set; } = "";
     public IReadOnlyList<FilaPelicula> Peliculas { get; private set; } = [];
-    public string Resumen { get; private set; } = "";
     public string Estado { get; private set; } = "";
     public bool PuedeBuscar => !cargando;
     public IReadOnlyList<FilaPelicula> MiLista { get; private set; } = [];
     public string EstadoLista { get; private set; } = "";
     public bool ViendoLista { get; private set; }
     public bool ViendoCatalogo => !ViendoLista;
+    public IReadOnlyList<FilaPelicula> FilasVisibles => ViendoLista ? MiLista : Peliculas;
+    public string MensajeVista => ViendoLista ? EstadoLista : Estado;
+    public bool PuedeExplorarCatalogo => ViendoLista ? listaVacia : busquedaSinResultados;
+    public string ResumenVista => FilasVisibles.Count switch
+    {
+        0 => "",
+        1 => "1 película",
+        int total => $"{total} películas"
+    };
 
     public async Task BuscarAsync(bool verTodo = false)
     {
@@ -32,8 +42,8 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
         string titulo = verTodo ? "" : Consulta.Trim();
         Consulta = titulo;
         cargando = true;
+        busquedaSinResultados = false;
         Estado = "Cargando películas…";
-        Resumen = "";
         Peliculas = [];
         NotificarCambios();
 
@@ -43,16 +53,11 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
                 .Select(pelicula => FilaPelicula.Crear(servicio, pelicula)).ToList());
             if (revision != revisionCatalogo) return;
             Peliculas = resultados;
+            busquedaSinResultados = resultados.Count == 0 && titulo.Length > 0;
 
             Estado = Peliculas.Count > 0 ? "" : titulo.Length == 0
                 ? "Todavía no hay películas en el catálogo."
                 : $"No se encontraron películas con «{titulo}» en el título.";
-            Resumen = Peliculas.Count switch
-            {
-                0 => "",
-                1 => "1 película",
-                _ => $"{Peliculas.Count} películas"
-            };
         }
         catch (Exception error) when (error is SqliteException or IOException or UnauthorizedAccessException or FormatException)
         {
@@ -82,6 +87,7 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
     {
         int revision = ++revisionLista;
         ViendoLista = true;
+        listaVacia = false;
         MiLista = [];
         EstadoLista = "Cargando tu lista…";
         NotificarCambios();
@@ -92,6 +98,7 @@ internal sealed class CatalogoViewModel(string carpeta) : INotifyPropertyChanged
                 .Select(entrada => FilaPelicula.Crear(servicio, entrada.Pelicula, entrada.Estado)).ToList());
             if (revision != revisionLista) return;
             MiLista = entradas;
+            listaVacia = entradas.Count == 0;
             EstadoLista = entradas.Count == 0
                 ? "Tu lista está vacía. Abre una ficha del catálogo y marca la película."
                 : "";
